@@ -1,3 +1,6 @@
 .vscode
-.venv
 .DS_Store
+
+# Python files
+.venv
+__pycache__
