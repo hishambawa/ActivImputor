@@ -1,31 +1,36 @@
-from zlog import logger, level, ConsoleFormatter
+import structlog
+import logging
 
 LOG_LEVELS = {
-            "debug": level.Level.DEBUG,
-            "info": level.Level.INFO,
-            "warn": level.Level.WARN,
-            "error": level.Level.ERROR,
-            "fatal": level.Level.FATAL
+            "debug": logging.DEBUG,
+            "info": logging.INFO,
+            "warn": logging.WARN,
+            "error": logging.ERROR,
+            "fatal": logging.FATAL
         }
 
-class Logger:
+class BasicLogger:
     def __init__(self, log_level):
         # set the log level.
         # if the passed level is not found, default value is set to INFO
-        logger.base_level = LOG_LEVELS.get(log_level, level.Level.INFO)
+        structlog.configure(
+            wrapper_class=structlog.make_filtering_bound_logger(LOG_LEVELS.get(log_level, logging.INFO))
+        )
 
-    def log_debug(self, message):
-        logger.debug().msg(message)
+        self.logger = structlog.get_logger()
 
-    def log_info(self, message):
-        logger.info().msg(message)
+    def log_debug(self, message, **kwargs):
+        self.logger.debug(message, **kwargs)
 
-    def log_warn(self, message):
-        logger.warn().msg(message)
+    def log_info(self, message, **kwargs):
+        self.logger.info(message, **kwargs)
 
-    def log_error(self, message):
-        logger.error().msg(message)
+    def log_warn(self, message, **kwargs):
+        self.logger.warn(message, **kwargs)
 
-    def log_fatal(self, message):
-        logger.fatal().msg(message)
+    def log_error(self, message, error, **kwargs):
+        self.logger.exception(message, exc_info=error, **kwargs)
+
+    def log_fatal(self, message, error, **kwargs):
+        self.logger.fatal(message, exc_info=error, **kwargs)
         exit(1)

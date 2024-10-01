@@ -1,4 +1,4 @@
-from utils.logger import Logger
+from utils.logger import BasicLogger
 import pandas as pd
 
 MOVIES_PATH = "movies.csv"
@@ -10,7 +10,7 @@ class Dataset:
 
     rating_matrix = pd.DataFrame()
 
-    def __init__(self, path, seperator, logger: Logger):
+    def __init__(self, path, seperator, logger: BasicLogger):
         try:
             # load the dataset
             self.movies = pd.read_csv(path + MOVIES_PATH, sep=seperator)
@@ -23,5 +23,5 @@ class Dataset:
 
             logger.log_debug("Rating matrix created")
 
-        except Exception as e:
-            logger.log_fatal("Dataset loading failed")
+        except Exception as error:
+            logger.log_fatal("Dataset loading failed", error)
